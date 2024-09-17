@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multi_store_app/views/main_screen.dart';
 import 'package:multi_store_app/views/authentication_screens/register_screen.dart';
+import 'package:multi_store_app/views/authentication_screens/forgot_password_screen.dart';
 import 'package:multi_store_app/controllers/auth_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +26,25 @@ class _LoginScreenState extends State<LoginScreen> {
   late String email;
   late String password;
 
+  @override
+  void initState() {
+    super.initState();
+
+    // Use authStateChanges to listen to the user's login status
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        // If a user is logged in, navigate to the MainScreen
+        Future.delayed(Duration.zero, () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainScreen(),
+              ));
+        });
+      }
+    });
+  }
+
   void loginUser() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -34,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response == "success") {
         Future.delayed(Duration.zero, () {
-          Navigator.push(context, MaterialPageRoute(
+          Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) {
               return const MainScreen();
             },
@@ -49,8 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
         });
         Future.delayed(Duration.zero, () {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Login Failed: $response')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Login Failed: $response')));
         });
       }
     }
@@ -88,7 +109,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 40.0),
                   TextFormField(
                     controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType
+                        .emailAddress, // Ensure the right input type
+                    autocorrect:
+                        false, // Disable autocorrect to avoid unwanted modes
+                    enableSuggestions:
+                        false, // Disable suggestions to avoid handwriting
                     decoration: InputDecoration(
                       labelText: 'Enter your email',
                       hintText: 'user@example.com',
@@ -139,7 +165,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 40.0),
+                  const SizedBox(height: 10.0),
+                  // Forgot Password Navigation
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordScreen(),
+                            ));
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: GoogleFonts.lato(
+                          textStyle: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30.0),
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -168,7 +219,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       if (_isLoading)
                         const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                     ],
                   ),
@@ -190,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
-                              return RegisterScreen();
+                              return const RegisterScreen();
                             },
                           ));
                         },

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';
-import 'package:multi_store_app/views/main_screen.dart';
+import 'package:multi_store_app/views/authentication_screens/login_screen.dart';
 
 // For security reasons the Firebase config is loaded from an .env file
 // in the root of the project directory. You must create a .env file
@@ -14,10 +14,10 @@ import 'package:multi_store_app/views/main_screen.dart';
 //   FIREBASE_MESSAGING_SENDER_ID="your-sender-id"
 //   FIREBASE_PROJECT_ID="your-project-id"
 //   FIREBASE_STORAGE_BUCKET="your-storage-bucket"
-// 
+//
 // Then add it to pubspec.yaml assets:
 //
-//   assets: 
+//   assets:
 //     - .env
 //
 Future<void> main() async {
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
     );
     return const MaterialApp(
       title: 'Multi Store App',
-      home: MainScreen(),
+      home: LoginScreen(),
     );
   }
 }
