@@ -11,8 +11,11 @@ class BannerWidget extends StatefulWidget {
 }
 
 class _BannerWidgetState extends State<BannerWidget> {
-  final Stream<QuerySnapshot> _bannersStream =
-      FirebaseFirestore.instance.collection('banners').snapshots();
+  final Stream<QuerySnapshot> _bannersStream = FirebaseFirestore.instance
+      .collection('banners')
+      .orderBy('viewOrder') // Ordenamos por 'viewOrder'
+      .snapshots();
+
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _timer;
@@ -20,21 +23,19 @@ class _BannerWidgetState extends State<BannerWidget> {
   @override
   void initState() {
     super.initState();
-    // Start the timer for auto-switching every 30 seconds
     _startAutoSlide();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _timer?.cancel(); // Cancel the timer when widget is disposed
+    _timer?.cancel();
     super.dispose();
   }
 
   void _startAutoSlide() {
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       setState(() {
-        // Ensure we loop back to the first image after the last one
         if (_currentPage < _pageController.page!.toInt() - 1) {
           _currentPage++;
         } else {
@@ -54,7 +55,7 @@ class _BannerWidgetState extends State<BannerWidget> {
       if (_currentPage > 0) {
         _currentPage--;
       } else {
-        _currentPage = _pageController.positions.length - 1; // Loop back to the last image
+        _currentPage = _pageController.positions.length - 1;
       }
       _pageController.animateToPage(
         _currentPage,
@@ -69,7 +70,7 @@ class _BannerWidgetState extends State<BannerWidget> {
       if (_currentPage < totalPages - 1) {
         _currentPage++;
       } else {
-        _currentPage = 0; // Loop back to the first image after the last one
+        _currentPage = 0;
       }
       _pageController.animateToPage(
         _currentPage,
@@ -111,7 +112,8 @@ class _BannerWidgetState extends State<BannerWidget> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  final bannerUrl = snapshot.data!.docs[index]['bannerImage'];
+                  final bannerUrl =
+                      snapshot.data!.docs[index]['bannerImage'];
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
