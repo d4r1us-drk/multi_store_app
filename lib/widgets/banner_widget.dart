@@ -112,8 +112,7 @@ class _BannerWidgetState extends State<BannerWidget> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  final bannerUrl =
-                      snapshot.data!.docs[index]['bannerImage'];
+                  final bannerUrl = snapshot.data!.docs[index]['bannerImage'];
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(

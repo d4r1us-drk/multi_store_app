@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:multi_store_app/models/product_model.dart';
+import 'package:multi_store_app/views/popup_screens/product_details_screen.dart';
 
 class ProductsWidget extends StatefulWidget {
   final String? selectedCategory;
@@ -70,7 +71,12 @@ class _ProductsWidgetState extends State<ProductsWidget> {
   Widget _buildProductCard(ProductModel product) {
     return GestureDetector(
       onTap: () {
-        // Navigate to Product Detail Page (to be implemented later)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailsScreen(product: product),
+          ),
+        );
       },
       child: Card(
         elevation: 3,
@@ -100,8 +106,8 @@ class _ProductsWidgetState extends State<ProductsWidget> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 product.productName,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 16),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             Padding(
