@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(55.0),
+        preferredSize: Size.fromHeight(100.0),
         child: TopBar(),
       ),
       body: SingleChildScrollView(
@@ -35,7 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 10),
             CategoryWidget(onCategorySelected: _onCategorySelected),
             const SizedBox(height: 20),
-            ProductsWidget(selectedCategory: selectedCategory), // Filter products
+            ProductsWidget(
+                selectedCategory: selectedCategory), // Filter products
           ],
         ),
       ),

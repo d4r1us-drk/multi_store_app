@@ -1,15 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_store_app/models/cart_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_store_app/models/product_model.dart';
+import 'package:multi_store_app/models/favorite_model.dart';
+import 'package:multi_store_app/providers/product_notifier.dart';
+import 'package:multi_store_app/providers/cart_notifier.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:multi_store_app/controllers/cart_controller.dart';
-import 'package:multi_store_app/controllers/favorite_controller.dart';
-import 'package:multi_store_app/models/favorite_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class ProductDetailsScreen extends StatefulWidget {
+class ProductDetailsScreen extends ConsumerStatefulWidget {
   final ProductModel product;
 
   const ProductDetailsScreen({super.key, required this.product});
@@ -18,9 +17,7 @@ class ProductDetailsScreen extends StatefulWidget {
   _ProductDetailsScreenState createState() => _ProductDetailsScreenState();
 }
 
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  late CartController _cartController;
-  late FavoriteController _favoriteController;
+class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   bool _isFavorite = false;
   String? _userId;
   String? _favoriteId;
@@ -28,63 +25,29 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _cartController = CartController();
-    _favoriteController = FavoriteController();
     _getUser();
+    _checkIfFavorite();
   }
 
-  // Get current user ID from FirebaseAuth and check if the product is already a favorite
-  void _getUser() async {
+  // Get current user ID from FirebaseAuth
+  void _getUser() {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       setState(() {
         _userId = user.uid;
       });
-      _checkIfFavorite();
     }
   }
 
   // Check if the product is already in the user's favorites
   void _checkIfFavorite() async {
-    if (_userId == null) return;
-
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('favorites')
-        .where('userId', isEqualTo: _userId)
-        .where('productId', isEqualTo: widget.product.id)
-        .get();
-
-    if (snapshot.docs.isNotEmpty) {
+    if (_userId != null) {
+      bool isFavorite = await ref
+          .read(productProvider.notifier)
+          .isFavorite(_userId!, widget.product.id);
       setState(() {
-        _isFavorite = true;
-        _favoriteId = snapshot.docs.first.id; // Get the favorite document ID
+        _isFavorite = isFavorite;
       });
-    }
-  }
-
-  // Add product to cart
-  void _addToCart() async {
-    if (_userId == null) return;
-
-    final cartItem = CartModel(
-      userId: _userId!,
-      productId: widget.product.id,
-      productName: widget.product.productName,
-      price: widget.product.price,
-      quantity: 1,
-      discount: widget.product.discount,
-      imageUrl: widget.product.images[0],
-    );
-
-    try {
-      await _cartController.addToCart(cartItem);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to cart')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding to cart: $e')),
-      );
     }
   }
 
@@ -100,40 +63,53 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       imageUrl: widget.product.images[0],
     );
 
-    try {
-      final docRef = await _favoriteController.addToFavorites(favorite);
-      setState(() {
-        _isFavorite = true;
-        _favoriteId = docRef.id;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to favorites')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding to favorites: $e')),
-      );
-    }
+    await ref.read(productProvider.notifier).addFavorite(favorite);
+    setState(() {
+      _isFavorite = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Added to favorites')),
+    );
   }
 
   // Remove product from favorites
   void _removeFromFavorites() async {
-    if (_favoriteId == null) return;
-
-    try {
-      await _favoriteController.removeFromFavorites(_favoriteId!);
+    if (_userId != null) {
+      await ref
+          .read(productProvider.notifier)
+          .removeFavorite(_userId!, widget.product.id);
       setState(() {
         _isFavorite = false;
-        _favoriteId = null;
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Removed from favorites')),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error removing from favorites: $e')),
-      );
     }
+  }
+
+  // Add product to the cart using CartNotifier
+  Future<void> _addToCart() async {
+    if (_userId == null) return;
+
+    await ref.read(cartProvider.notifier).addProductToCart(
+          productName: widget.product.productName,
+          productPrice: widget.product.price,
+          productCategory: widget.product.category,
+          imageUrl: widget.product.images,
+          quantity: 1, // Default to 1 when adding to cart
+          stock: widget.product.size,
+          productId: widget.product.id,
+          productSize: widget.product.size,
+          discount: widget.product.discount,
+          description: widget.product.description,
+          userId: _userId!, // Pass the logged-in user ID
+        );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Added to cart')),
+    );
   }
 
   @override
