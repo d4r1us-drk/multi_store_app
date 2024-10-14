@@ -75,7 +75,7 @@ class ProductRepository {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        return FavoriteModel.fromMap(doc.data() as Map<String, dynamic>);
+        return FavoriteModel.fromMap(doc.data());
       }).toList();
     });
   }

@@ -9,6 +9,27 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
 class CartRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Get the cart items for the user
+  Future<Map<String, CartModel>> getCartItems(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('cart')
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return {
+          for (var doc in snapshot.docs) doc.id: CartModel.fromMap(doc.data())
+        };
+      }
+      return {};
+    } catch (e) {
+      throw Exception('Failed to fetch cart items: $e');
+    }
+  }
+
+  /// Add a product to the cart in Firestore
   Future<void> addProductToCart(String userId, CartModel cartItem) async {
     try {
       await _firestore

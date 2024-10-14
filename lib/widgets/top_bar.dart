@@ -40,7 +40,6 @@ class _TopBarState extends State<TopBar> {
 
   void _submitSearch(String query) {
     // Placeholder function to handle the search submission
-    print("Search submitted: $query");
     // Implement your search logic here
   }
 
@@ -49,7 +48,7 @@ class _TopBarState extends State<TopBar> {
     return Container(
       color: Colors.blueAccent, // Background color for the top bar
       padding: const EdgeInsets.fromLTRB(
-          16.0, 48.0, 16.0, 8.0), // Adjusted padding for top separation
+          16.0, 8.0, 16.0, 8.0), // Adjusted padding for top separation
       child: Row(
         children: [
           // SVG App Logo

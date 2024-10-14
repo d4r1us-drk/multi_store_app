@@ -14,6 +14,12 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
       : _cartRepository = ref.read(cartRepositoryProvider),
         super({});
 
+  /// Load the cart from Firestore for the logged-in user
+  Future<void> loadCart(String userId) async {
+    final cartItems = await _cartRepository.getCartItems(userId);
+    state = cartItems;
+  }
+
   /// Add a product to the cart and save to Firebase
   Future<void> addProductToCart({
     required String productName,

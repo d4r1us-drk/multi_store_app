@@ -53,7 +53,7 @@ class _AccountScreenState extends State<AccountScreen> {
       bioController.text = userData['bio'] ?? "";
       cityController.text = userData['city'] ?? "";
       stateController.text = userData['state'] ?? "";
-      _profileImageUrl = userData['profileImage'] ?? null;
+      _profileImageUrl = userData['profileImage'];
 
       setState(() {});
     }
@@ -89,7 +89,7 @@ class _AccountScreenState extends State<AccountScreen> {
     // Update email in FirebaseAuth if it has changed
     if (_currentUser!.email != emailController.text) {
       try {
-        await _currentUser!.updateEmail(emailController.text);
+        await _currentUser!.verifyBeforeUpdateEmail(emailController.text);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error updating email: $e")),

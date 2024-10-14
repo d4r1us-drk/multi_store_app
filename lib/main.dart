@@ -1,10 +1,11 @@
+import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io';
-import 'package:multi_store_app/views/authentication_screens/login_screen.dart';
+import 'package:multi_store_app/views/startup_screen.dart';
 
 // For security reasons the Firebase config is loaded from an .env file
 // in the root of the project directory. You must create a .env file
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
     );
     return const MaterialApp(
       title: 'Multi Store App',
-      home: LoginScreen(),
+      home: StartupScreen(),
     );
   }
 }

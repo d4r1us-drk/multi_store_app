@@ -1,15 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:multi_store_app/providers/cart_notifier.dart';
+import 'package:multi_store_app/views/popup_screens/checkout_screen.dart';
 
-class CartScreen extends ConsumerWidget {
+class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _CartScreenState createState() => _CartScreenState();
+}
+
+class _CartScreenState extends ConsumerState<CartScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      ref
+          .read(cartProvider.notifier)
+          .loadCart(user.uid); // Load cart from Firestore
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cartItems = ref.watch(cartProvider);
-    final user = FirebaseAuth.instance.currentUser; // Get the logged-in user
+    final user = FirebaseAuth.instance.currentUser;
 
     // Check if user is logged in, if not show a message
     if (user == null) {
@@ -219,7 +236,10 @@ class CartScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              // Handle checkout functionality
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CheckoutScreen()),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,

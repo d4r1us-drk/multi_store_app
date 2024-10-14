@@ -20,7 +20,6 @@ class ProductDetailsScreen extends ConsumerStatefulWidget {
 class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   bool _isFavorite = false;
   String? _userId;
-  String? _favoriteId;
 
   @override
   void initState() {
