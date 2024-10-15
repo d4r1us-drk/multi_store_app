@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:multi_store_app/controllers/auth_controller.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:multi_store_app/controllers/auth_controller.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -127,6 +128,13 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
+  // Method to log out the user
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context)
+        .pushReplacementNamed('/login'); // Navigate to login screen
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,6 +247,18 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: ElevatedButton(
                         onPressed: _updateProfile,
                         child: const Text("Update Profile"),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Logout Button
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.redAccent, // Red color for logout
+                        ),
+                        onPressed: _logout,
+                        child: const Text("Log Out"),
                       ),
                     ),
                   ],

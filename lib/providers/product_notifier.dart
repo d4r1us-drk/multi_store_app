@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_store_app/models/favorite_model.dart';
 import 'package:multi_store_app/models/product_model.dart';
@@ -22,6 +24,31 @@ class ProductNotifier extends StateNotifier<List<ProductModel>> {
       state = [...state, product]; // Add fetched product to the state
     }
     return product;
+  }
+
+  // Add a new product
+  Future<void> addProduct(ProductModel product, List<File> imageFiles) async {
+    try {
+      await _productRepository.addProduct(product, imageFiles);
+      // Once the product is added, refresh the state
+      state = [...state, product];
+    } catch (e) {
+      throw Exception("Failed to add product: $e");
+    }
+  }
+
+  // Update an existing product
+  Future<void> updateProduct(ProductModel product, [File? imageFile]) async {
+    try {
+      await _productRepository.updateProduct(product, imageFile);
+      // Update the product in the state
+      state = [
+        for (final prod in state)
+          if (prod.id == product.id) product else prod,
+      ];
+    } catch (e) {
+      throw Exception("Failed to update product: $e");
+    }
   }
 
   // Stream user favorites

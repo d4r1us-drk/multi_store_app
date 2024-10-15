@@ -30,8 +30,12 @@ class ProductModel {
     return ProductModel(
       id: doc.id,
       productName: data['productName'],
-      price: (data['price'] is int) ? (data['price'] as int).toDouble() : data['price'],
-      discount: (data['discount'] is int) ? (data['discount'] as int).toDouble() : data['discount'],
+      price: (data['price'] is int)
+          ? (data['price'] as int).toDouble()
+          : data['price'],
+      discount: (data['discount'] is int)
+          ? (data['discount'] as int).toDouble()
+          : data['discount'],
       quantity: data['quantity'],
       description: data['description'],
       category: data['category'],
@@ -52,5 +56,30 @@ class ProductModel {
       'size': size,
       'images': images,
     };
+  }
+
+  // copyWith method to update only certain fields while keeping others the same
+  ProductModel copyWith({
+    String? id,
+    String? productName,
+    double? price,
+    double? discount,
+    int? quantity,
+    String? description,
+    String? category,
+    String? size,
+    List<String>? images,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      productName: productName ?? this.productName,
+      price: price ?? this.price,
+      discount: discount ?? this.discount,
+      quantity: quantity ?? this.quantity,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      size: size ?? this.size,
+      images: images ?? this.images,
+    );
   }
 }

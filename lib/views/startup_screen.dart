@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multi_store_app/views/authentication_screens/auth_gate.dart';
-import 'package:multi_store_app/views/authentication_screens/login_screen.dart';
 
 class StartupScreen extends StatelessWidget {
   const StartupScreen({super.key});
@@ -16,6 +15,15 @@ class StartupScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Add a brand logo or a welcome illustration
+              Image.asset(
+                'assets/images/Illustration.png', // Update with your image path
+                width: 250,
+                height: 250,
+              ),
+              const SizedBox(height: 40),
+
+              // Welcome text
               Text(
                 'Welcome to MultiStore',
                 style: GoogleFonts.lato(
@@ -26,77 +34,81 @@ class StartupScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Image.asset(
-                'assets/images/Illustration.png',
-                width: 250,
-                height: 250,
-              ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 10),
+
               Text(
-                'Who are you?',
+                'Choose your role to continue',
                 style: GoogleFonts.lato(
                   textStyle: const TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black54,
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  backgroundColor: Colors.blueAccent,
-                ),
-                onPressed: () {
-                  // Navigate to Buyer Login Screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
+              const SizedBox(height: 40),
+
+              // Buyer button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
-                  );
-                },
-                child: Text(
-                  'Buyer',
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AuthGate(userType: 'buyer'),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Sign in as Buyer',
+                    style: GoogleFonts.lato(
+                      textStyle: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  backgroundColor: Colors.greenAccent,
-                ),
-                onPressed: () {
-                  // Navigate to Vendor Authentication Screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AuthGate(),
+
+              // Vendor button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
-                  );
-                },
-                child: Text(
-                  'Vendor',
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                    backgroundColor: Colors.green,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const AuthGate(userType: 'vendor'),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Sign in as Vendor',
+                    style: GoogleFonts.lato(
+                      textStyle: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),

@@ -1,6 +1,6 @@
 # multi_store_app
 
-Multi Store Application
+IDS349 - INTEC
 
 ## Getting Started
 

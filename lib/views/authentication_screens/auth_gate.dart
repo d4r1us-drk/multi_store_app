@@ -2,44 +2,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_store_app/views/vendor_screens/landing_screen.dart';
-import 'package:multi_store_app/views/vendor_screens/registration_screen.dart';
+
+import '../main_screen.dart';
+import '../vendor_screens/landing_screen.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  final String userType;
+
+  const AuthGate({super.key, required this.userType});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
-      // If the user is already signed-in, use it as initial data
       initialData: FirebaseAuth.instance.currentUser,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          // User is not signed in
           return SignInScreen(
             providers: [EmailAuthProvider()],
           );
         }
 
-        // Check if the vendor exists in the Firestore collection
+        // Check if user is vendor or buyer and handle Firestore data accordingly
         return FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance
-              .collection('vendors')
+              .collection(userType == 'vendor' ? 'vendors' : 'buyers')
               .doc(FirebaseAuth.instance.currentUser!.uid)
               .get(),
-          builder: (context, vendorSnapshot) {
-            if (vendorSnapshot.connectionState == ConnectionState.waiting) {
+          builder: (context, userSnapshot) {
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             }
 
-            // If the vendor doesn't exist, show the registration screen
-            if (!vendorSnapshot.hasData || !vendorSnapshot.data!.exists) {
-              return const RegistrationScreen();
+            // If user is not registered, show the custom registration form
+            if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+              return LandingScreen();
             }
 
-            // If the vendor is found, continue to the landing screen
-            return LandingScreen();
+            // If registered, navigate to the appropriate landing page
+            return userType == 'vendor' ? LandingScreen() : MainScreen();
           },
         );
       },

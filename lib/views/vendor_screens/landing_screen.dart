@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/models/vendor_model.dart';
 import 'package:multi_store_app/views/vendor_screens/main_vendor_screen.dart';
-import 'package:multi_store_app/views/vendor_screens/registration_screen.dart';
+
+import '../authentication_screens/register_form.dart';
 
 class LandingScreen extends StatelessWidget {
   LandingScreen({super.key});
@@ -20,7 +21,9 @@ class LandingScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Center(child: Text("Something went wrong"));
+            return const Center(
+              child: Text("Something went wrong. Please try again later."),
+            );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -29,13 +32,13 @@ class LandingScreen extends StatelessWidget {
 
           // If vendor doesn't exist, send to registration screen
           if (!snapshot.data!.exists) {
-            return const RegistrationScreen();
+            return const RegisterForm(userType: 'vendor');
           }
 
           VendorModel vendor = VendorModel.fromJson(
               snapshot.data!.data() as Map<String, dynamic>);
 
-// Check if vendor is approved
+          // Check if vendor is approved
           if (!vendor.approved) {
             return Center(
               child: Column(
@@ -43,10 +46,11 @@ class LandingScreen extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: vendor.imageUrl != null && vendor.imageUrl.isNotEmpty
+                    child: vendor.imageUrl.isNotEmpty
                         ? Image.network(
                             vendor.imageUrl,
                             width: 90,
+                            height: 90,
                             fit: BoxFit.cover,
                           )
                         : const Icon(
@@ -56,15 +60,32 @@ class LandingScreen extends StatelessWidget {
                           ),
                   ),
                   const SizedBox(height: 20),
-                  Text(vendor.businessName),
+                  Text(
+                    vendor.businessName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
                   const SizedBox(height: 10),
-                  const Text("Your application has been submitted."),
+                  const Text(
+                    "Your application has been submitted.",
+                    style: TextStyle(fontSize: 16),
+                  ),
                   const SizedBox(height: 10),
-                  const Text("Waiting for approval..."),
-                  TextButton(
+                  const Text(
+                    "Waiting for approval...",
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
+                      Navigator.of(context).pop(); // Redirect to sign-in screen
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                    ),
                     child: const Text("Sign out"),
                   ),
                 ],
